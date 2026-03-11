@@ -42,21 +42,36 @@
                             
 
            <section>
+    <div class="product">
+        <h1>Use your camera</h1>
+        <p>Save your reports</p>
 
-            <div class="product">
-    <h1>Use your camera</h1>
-    <p>Save your reports</p>
+        <div class="camera-container" style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;">
+            <div class="view-box">
+                <small>Live Preview</small>
+                <video id="video" autoplay playsinline width="400" height="300" style="background: #222; border-radius: 8px; border: 2px solid #3498db;"></video>
+            </div>
+            
+            <div class="view-box">
+                <small>Captured Snapshot</small>
+                <canvas id="canvas" width="400" height="300" style="background: #eee; border-radius: 8px; border: 2px solid #2ecc71; display: block;"></canvas>
+            </div>
+        </div>
 
-    <video id="video" autoplay playsinline width="400" height="300" style="background: #000;"></video>
-    <canvas id="canvas" width="400" height="300" style="display:none;"></canvas>
-    
-    <div class="controls">
-        <button id="start">Start Camera</button>
-        <button id="snap" disabled>Take Snapshot</button>
-        <button id="save" disabled>Save Snapshot</button>
-        <button id="stop" disabled>Stop Camera</button>
+        <div class="controls">
+            <button id="start">Start Camera</button>
+            <button id="snap" disabled>Take Snapshot</button>
+            <button id="save" disabled>Save Snapshot</button>
+            <button id="stop" disabled>Stop Camera</button>
+        </div>
     </div>
-</div>
+
+    <div class="pro">
+        <div class="product1">
+            <h1>Saved reports here</h1>
+            </div>
+    </div>
+</section>
 
 <script>
     const video = document.getElementById('video');
@@ -71,45 +86,35 @@
     // 1. Start Camera
     startBtn.addEventListener('click', async () => {
         try {
-            // Constraints: Requesting video
-            const constraints = {
-                video: { facingMode: "user" }, // "user" for front cam, "environment" for back
-                audio: false
-            };
-
-            stream = await navigator.mediaDevices.getUserMedia(constraints);
+            stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
             video.srcObject = stream;
             
-            // UI Updates
             snapBtn.disabled = false;
             stopBtn.disabled = false;
             startBtn.disabled = true;
         } catch (err) {
-            console.error("Error accessing camera: ", err);
-            alert("Could not access camera. Ensure you are using HTTPS or Localhost and have granted permissions.");
+            alert("Camera access denied. Please use HTTPS or Localhost.");
+            console.error(err);
         }
     });
 
-    // 2. Take Snapshot
+    // 2. Take Snapshot (Captures current frame while video keeps running)
     snapBtn.addEventListener('click', () => {
-        // Match canvas size to actual video stream size
+        // Ensure canvas matches the video stream's aspect ratio
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         
-        // Draw the current frame
+        // Draw the video frame onto the canvas
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
         
-        // Show the canvas (optional, if you want to preview the still)
-        canvas.style.display = "block";
         saveBtn.disabled = false;
     });
 
-    // 3. Save Snapshot
+    // 3. Save to Computer
     saveBtn.addEventListener('click', () => {
-        const dataURL = canvas.toDataURL('image/png');
         const link = document.createElement('a');
-        link.href = dataURL;
-        link.download = `report_${new Date().getTime()}.png`;
+        link.download = `report_${Date.now()}.png`;
+        link.href = canvas.toDataURL('image/png');
         link.click();
     });
 
@@ -119,14 +124,16 @@
             stream.getTracks().forEach(track => track.stop());
             video.srcObject = null;
             
-            // Reset UI
             snapBtn.disabled = true;
             saveBtn.disabled = true;
             stopBtn.disabled = true;
             startBtn.disabled = false;
-            canvas.style.display = "none";
+            
+            // Clear canvas when stopping
+            context.clearRect(0, 0, canvas.width, canvas.height);
         }
     });
+</script>
 </script>
                 
             <div class="pro">
