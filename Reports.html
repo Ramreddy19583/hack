@@ -1,0 +1,169 @@
+<html>
+
+    
+    <head>
+      
+        <title>hospital</title>
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link rel="stylesheet" href="reports.css">
+       
+  
+    </head>
+    
+    <body>
+        <div class="main">
+             <header class="navbar">
+        <div class="logo">
+            <i class="fas fa-hospital-plus"></i> <span>HOSPITAL</span>
+        </div>
+        
+        <nav>
+            <ul class="nav-links" id="navLinks">
+                 <li><a href="index.html">Home</a></li>
+                <li><a href="Appointment.html">Appointment</a></li>
+                <li><a href="Reports.html">Reports</a></li>
+                <li><a href="billing.html">Billing</a></li>
+                 <li><a href="pharmacy.html">Pharmacy</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Login <i class="fa fa-caret-down"></i></a>
+                    <div class="dropdown-content">
+                        <a href="patient_login.html">Patient</a>
+                        <a href="doctor_login.html">Doctor</a>
+                        <a href="admin_login.html">Admin</a>
+                    </div>
+                </li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="hamburger" id="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+                            
+
+           <section>
+
+            <div class="product">
+    <h1>Use your camera</h1>
+    <p>Save your reports</p>
+
+    <video id="video" autoplay playsinline width="400" height="300" style="background: #000;"></video>
+    <canvas id="canvas" width="400" height="300" style="display:none;"></canvas>
+    
+    <div class="controls">
+        <button id="start">Start Camera</button>
+        <button id="snap" disabled>Take Snapshot</button>
+        <button id="save" disabled>Save Snapshot</button>
+        <button id="stop" disabled>Stop Camera</button>
+    </div>
+</div>
+
+<script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const startBtn = document.getElementById('start');
+    const snapBtn = document.getElementById('snap');
+    const saveBtn = document.getElementById('save');
+    const stopBtn = document.getElementById('stop');
+    const context = canvas.getContext('2d');
+    let stream = null;
+
+    // 1. Start Camera
+    startBtn.addEventListener('click', async () => {
+        try {
+            // Constraints: Requesting video
+            const constraints = {
+                video: { facingMode: "user" }, // "user" for front cam, "environment" for back
+                audio: false
+            };
+
+            stream = await navigator.mediaDevices.getUserMedia(constraints);
+            video.srcObject = stream;
+            
+            // UI Updates
+            snapBtn.disabled = false;
+            stopBtn.disabled = false;
+            startBtn.disabled = true;
+        } catch (err) {
+            console.error("Error accessing camera: ", err);
+            alert("Could not access camera. Ensure you are using HTTPS or Localhost and have granted permissions.");
+        }
+    });
+
+    // 2. Take Snapshot
+    snapBtn.addEventListener('click', () => {
+        // Match canvas size to actual video stream size
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        
+        // Draw the current frame
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // Show the canvas (optional, if you want to preview the still)
+        canvas.style.display = "block";
+        saveBtn.disabled = false;
+    });
+
+    // 3. Save Snapshot
+    saveBtn.addEventListener('click', () => {
+        const dataURL = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = `report_${new Date().getTime()}.png`;
+        link.click();
+    });
+
+    // 4. Stop Camera
+    stopBtn.addEventListener('click', () => {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            video.srcObject = null;
+            
+            // Reset UI
+            snapBtn.disabled = true;
+            saveBtn.disabled = true;
+            stopBtn.disabled = true;
+            startBtn.disabled = false;
+            canvas.style.display = "none";
+        }
+    });
+</script>
+                
+            <div class="pro">
+            <div class="product1">
+              <h1>Saved reports here</h1>
+              <div class="item1">
+                <button1>click here</button1>
+                <h1>Reports saved</h1>
+                
+              </div>
+              <div class="item2">              
+                <button2>click here</button2>
+
+                
+              </div>
+               <div class="item2">
+                 <button3>click here</button3>
+
+                
+              </div>
+              
+                
+            </div>
+            </div>
+           
+            
+            </section>
+            <div class="footer">
+                <p>&copy; 2024 Hospital Management System. All rights reserved.</p>
+            </div>
+
+            
+            
+        </div>
+
+        
+    </body>
+
+</html>
+
