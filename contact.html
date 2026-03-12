@@ -127,7 +127,26 @@
                 <h3>Copyright @ 2024 All rights reserved | Designed by Sriram Reddy</h3>
             </div>
         </div>
-    
+    <script>
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+
+    hamburger.addEventListener('click', () => {
+        // This toggles the 'active' class which displays the menu
+        navLinks.classList.toggle('active');
+        
+        // Optional: Change icon from bars to 'X' when open
+        const icon = hamburger.querySelector('i');
+        if (navLinks.classList.contains('active')) {
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-times');
+        } else {
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+        }
+    });
+</script>
+
     </body>
 
 </html>
